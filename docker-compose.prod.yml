@@ -1,0 +1,136 @@
+version: '3.8'
+
+# Production Docker Compose override
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  postgres:
+    environment:
+      # Override for production security
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    # Add volume for persistent data in production
+    volumes:
+      - /opt/gnosis-safe/postgres:/var/lib/postgresql/data
+    # Remove port exposure for security
+    ports: []
+    # Add restart policy
+    restart: unless-stopped
+
+  redis:
+    # Add restart policy
+    restart: unless-stopped
+    # Remove port exposure for security
+    ports: []
+    # Add volume for persistent data
+    volumes:
+      - /opt/gnosis-safe/redis:/data
+
+  transaction-service:
+    environment:
+      # Production environment variables
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
+      # Add production logging
+      LOGGING_LEVEL: "INFO"
+    # Add restart policy
+    restart: unless-stopped
+    # Remove port exposure for security
+    ports: []
+    # Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  config-service:
+    environment:
+      # Production environment variables
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
+      # Add production logging
+      LOGGING_LEVEL: "INFO"
+    # Add restart policy
+    restart: unless-stopped
+    # Remove port exposure for security
+    ports: []
+    # Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  client-gateway:
+    environment:
+      # Production environment variables
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
+      # Add production logging
+      LOGGING_LEVEL: "INFO"
+    # Add restart policy
+    restart: unless-stopped
+    # Remove port exposure for security
+    ports: []
+    # Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  safe-react:
+    environment:
+      # Production environment variables
+      REACT_APP_IS_PRODUCTION: "true"
+      # Use HTTPS in production
+      REACT_APP_GATEWAY_URL: "https://${GNOSIS_SAFE_DOMAIN}/api/v1"
+      REACT_APP_TRANSACTION_SERVICE_URL: "https://${GNOSIS_SAFE_DOMAIN}/api/v2"
+      REACT_APP_CONFIG_SERVICE_URL: "https://${GNOSIS_SAFE_DOMAIN}/api/v3"
+    # Add restart policy
+    restart: unless-stopped
+    # Remove port exposure for security
+    ports: []
+
+  nginx:
+    # Add restart policy
+    restart: unless-stopped
+    # Production SSL configuration
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - /var/log/nginx:/var/log/nginx
+    # Only expose HTTPS port
+    ports:
+      - "443:443"
+    # Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Secrets for production
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+
+# Production volumes
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gnosis-safe/postgres
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/gnosis-safe/redis
