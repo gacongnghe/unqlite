@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-safe_db}
+      POSTGRES_USER: ${POSTGRES_USER:-safe_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-safe_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-safe_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Safe Transaction Service
+  transaction-service:
+    image: safe-global/safe-transaction-service:latest
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-here}
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-safe_user}:${POSTGRES_PASSWORD:-safe_password}@postgres:5432/${POSTGRES_DB:-safe_db}
+      - REDIS_URL=redis://redis:6379
+      - ETHEREUM_NODE_URL=${ETHEREUM_NODE_URL}
+      - ETHEREUM_TRACING_NODE_URL=${ETHEREUM_TRACING_NODE_URL}
+      - ETHEREUM_MAX_WORKERS=10
+      - ETHEREUM_REQUEST_TIMEOUT=100
+      - SAFE_CONTRACT_ADDRESS=${SAFE_CONTRACT_ADDRESS}
+      - SAFE_PROXY_FACTORY_ADDRESS=${SAFE_PROXY_FACTORY_ADDRESS}
+      - SAFE_MULTISEND_ADDRESS=${SAFE_MULTISEND_ADDRESS}
+      - SAFE_MULTISEND_CALL_ONLY_ADDRESS=${SAFE_MULTISEND_CALL_ONLY_ADDRESS}
+      - SAFE_FALLBACK_HANDLER_ADDRESS=${SAFE_FALLBACK_HANDLER_ADDRESS}
+      - SAFE_DEFAULT_CALLBACK_HANDLER_ADDRESS=${SAFE_DEFAULT_CALLBACK_HANDLER_ADDRESS}
+      - SAFE_CONTRACT_ADDRESS_L2=${SAFE_CONTRACT_ADDRESS_L2}
+      - SAFE_PROXY_FACTORY_ADDRESS_L2=${SAFE_PROXY_FACTORY_ADDRESS_L2}
+      - SAFE_MULTISEND_ADDRESS_L2=${SAFE_MULTISEND_ADDRESS_L2}
+      - SAFE_MULTISEND_CALL_ONLY_ADDRESS_L2=${SAFE_MULTISEND_CALL_ONLY_ADDRESS_L2}
+      - SAFE_FALLBACK_HANDLER_ADDRESS_L2=${SAFE_FALLBACK_HANDLER_ADDRESS_L2}
+      - SAFE_DEFAULT_CALLBACK_HANDLER_ADDRESS_L2=${SAFE_DEFAULT_CALLBACK_HANDLER_ADDRESS_L2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+
+  # Safe Config Service
+  config-service:
+    image: safe-global/safe-config-service:latest
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-here}
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-safe_user}:${POSTGRES_PASSWORD:-safe_password}@postgres:5432/${POSTGRES_DB:-safe_db}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./logs:/app/logs
+
+  # Safe Client Gateway
+  client-gateway:
+    image: safe-global/safe-client-gateway:latest
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-here}
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-safe_user}:${POSTGRES_PASSWORD:-safe_password}@postgres:5432/${POSTGRES_DB:-safe_db}
+      - REDIS_URL=redis://redis:6379
+      - TRANSACTION_SERVICE_URL=http://transaction-service:8000
+      - CONFIG_SERVICE_URL=http://config-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      transaction-service:
+        condition: service_started
+      config-service:
+        condition: service_started
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./logs:/app/logs
+
+  # Safe React Frontend
+  safe-react:
+    image: safe-global/safe-react:latest
+    environment:
+      - REACT_APP_GATEWAY_URL=http://localhost:8002
+      - REACT_APP_TRANSACTION_SERVICE_URL=http://localhost:8000
+      - REACT_APP_CONFIG_SERVICE_URL=http://localhost:8001
+      - REACT_APP_CHAIN_ID=${REACT_APP_CHAIN_ID:-1}
+      - REACT_APP_IS_PRODUCTION=${REACT_APP_IS_PRODUCTION:-false}
+      - REACT_APP_GOOGLE_ANALYTICS_ID=${REACT_APP_GOOGLE_ANALYTICS_ID}
+      - REACT_APP_GOOGLE_TAG_MANAGER_ID=${REACT_APP_GOOGLE_TAG_MANAGER_ID}
+      - REACT_APP_INTERCOM_APP_ID=${REACT_APP_INTERCOM_APP_ID}
+      - REACT_APP_PORTIS_ID=${REACT_APP_PORTIS_ID}
+      - REACT_APP_FORTMATIC_KEY=${REACT_APP_FORTMATIC_KEY}
+      - REACT_APP_WALLETCONNECT_BRIDGE=${REACT_APP_WALLETCONNECT_BRIDGE}
+      - REACT_APP_WALLETCONNECT_BRIDGE_URL=${REACT_APP_WALLETCONNECT_BRIDGE_URL}
+      - REACT_APP_WALLETCONNECT_DEEPLINK=${REACT_APP_WALLETCONNECT_DEEPLINK}
+      - REACT_APP_WALLETCONNECT_DEEPLINK_URL=${REACT_APP_WALLETCONNECT_DEEPLINK_URL}
+    depends_on:
+      client-gateway:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - safe-react
+      - client-gateway
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

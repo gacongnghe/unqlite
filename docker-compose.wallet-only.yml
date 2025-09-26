@@ -1,0 +1,102 @@
+version: '3.8'
+
+# Minimal Gnosis Safe setup for wallet maintenance only
+# This removes components needed for Safe creation/deployment
+# Use with: docker-compose -f docker-compose.wallet-only.yml up -d
+
+services:
+  # PostgreSQL Database (minimal)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-safe_db}
+      POSTGRES_USER: ${POSTGRES_USER:-safe_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-safe_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Remove port exposure for security
+    ports: []
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-safe_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache (required for performance)
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    # Remove port exposure for security
+    ports: []
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Safe Client Gateway (REQUIRED for frontend)
+  client-gateway:
+    image: safe-global/safe-client-gateway:latest
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-here}
+      - DJANGO_DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-safe_user}:${POSTGRES_PASSWORD:-safe_password}@postgres:5432/${POSTGRES_DB:-safe_db}
+      - REDIS_URL=redis://redis:6379
+      # Point to external/remote services instead of local ones
+      - TRANSACTION_SERVICE_URL=${TRANSACTION_SERVICE_URL:-https://safe-transaction.gnosis.io}
+      - CONFIG_SERVICE_URL=${CONFIG_SERVICE_URL:-https://safe-config.gnosis.io}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Remove port exposure for security
+    ports: []
+    volumes:
+      - ./logs:/app/logs
+
+  # Safe React Frontend (REQUIRED for wallet interface)
+  safe-react:
+    image: safe-global/safe-react:latest
+    environment:
+      # Connect to external Safe services instead of local ones
+      - REACT_APP_GATEWAY_URL=${REACT_APP_GATEWAY_URL:-https://safe-client.gnosis.io}
+      - REACT_APP_TRANSACTION_SERVICE_URL=${REACT_APP_TRANSACTION_SERVICE_URL:-https://safe-transaction.gnosis.io}
+      - REACT_APP_CONFIG_SERVICE_URL=${REACT_APP_CONFIG_SERVICE_URL:-https://safe-config.gnosis.io}
+      - REACT_APP_CHAIN_ID=${REACT_APP_CHAIN_ID:-1}
+      - REACT_APP_IS_PRODUCTION=${REACT_APP_IS_PRODUCTION:-false}
+      # Keep only essential wallet integrations
+      - REACT_APP_PORTIS_ID=${REACT_APP_PORTIS_ID}
+      - REACT_APP_FORTMATIC_KEY=${REACT_APP_FORTMATIC_KEY}
+      - REACT_APP_WALLETCONNECT_BRIDGE=${REACT_APP_WALLETCONNECT_BRIDGE}
+      # Remove analytics and non-essential integrations
+      # - REACT_APP_GOOGLE_ANALYTICS_ID
+      # - REACT_APP_GOOGLE_TAG_MANAGER_ID
+      # - REACT_APP_INTERCOM_APP_ID
+    # Remove dependency on local services
+    depends_on:
+      - client-gateway
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs
+
+  # Nginx Reverse Proxy (REQUIRED for external access)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.wallet-only.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - safe-react
+      - client-gateway
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
