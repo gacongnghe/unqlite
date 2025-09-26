@@ -207,6 +207,23 @@ show-network: ## Show Docker network configuration
 	@docker-compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 
 # =============================================================================
+# Wallet-Only Commands
+# =============================================================================
+
+wallet-only: setup ## Start Gnosis Safe in wallet-maintenance mode
+	@echo "Starting Gnosis Safe in wallet-maintenance mode..."
+	docker-compose -f docker-compose.wallet-only.yml up -d
+	@echo "Wallet-only mode started!"
+	@echo "Access your Safe wallet at: http://localhost"
+
+wallet-stop: ## Stop wallet-only services
+	@echo "Stopping wallet-only services..."
+	docker-compose -f docker-compose.wallet-only.yml down
+
+wallet-logs: ## Show logs from wallet-only services
+	docker-compose -f docker-compose.wallet-only.yml logs -f
+
+# =============================================================================
 # Quick Commands
 # =============================================================================
 
