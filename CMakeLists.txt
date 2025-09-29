@@ -15,9 +15,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/JsonSchemaSerializer/src)
 
 # Source files for the library
 set(JSONSCHEMA_SOURCES
-    JsonSchemaSerializer/src/JsonSchemaParser.cpp
-    JsonSchemaSerializer/src/BinarySerializer.cpp
-    JsonSchemaSerializer/src/JsonSchemaValidator.cpp
+    JsonSchemaSerializer/src/MinimalJsonParser.cpp
+    JsonSchemaSerializer/src/SimpleBinarySerializer.cpp
+    JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp
     JsonSchemaSerializer/src/JsonSchemaSerializer.cpp
 )
 
@@ -25,9 +25,9 @@ set(JSONSCHEMA_SOURCES
 set(JSONSCHEMA_HEADERS
     JsonSchemaSerializer/include/JsonSchemaTypes.h
     JsonSchemaSerializer/include/JsonSchemaSerializer.h
-    JsonSchemaSerializer/src/JsonSchemaParser.h
-    JsonSchemaSerializer/src/BinarySerializer.h
-    JsonSchemaSerializer/src/JsonSchemaValidator.h
+    JsonSchemaSerializer/src/MinimalJsonParser.h
+    JsonSchemaSerializer/src/SimpleBinarySerializer.h
+    JsonSchemaSerializer/src/SimpleJsonSchemaValidator.h
 )
 
 # Create the static library

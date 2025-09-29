@@ -82,14 +82,14 @@
   <ItemGroup>
     <ClInclude Include="include\JsonSchemaSerializer.h" />
     <ClInclude Include="include\JsonSchemaTypes.h" />
-    <ClInclude Include="src\JsonSchemaParser.h" />
-    <ClInclude Include="src\BinarySerializer.h" />
-    <ClInclude Include="src\JsonSchemaValidator.h" />
+    <ClInclude Include="src\MinimalJsonParser.h" />
+    <ClInclude Include="src\SimpleBinarySerializer.h" />
+    <ClInclude Include="src\SimpleJsonSchemaValidator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\JsonSchemaParser.cpp" />
-    <ClCompile Include="src\BinarySerializer.cpp" />
-    <ClCompile Include="src\JsonSchemaValidator.cpp" />
+    <ClCompile Include="src\MinimalJsonParser.cpp" />
+    <ClCompile Include="src\SimpleBinarySerializer.cpp" />
+    <ClCompile Include="src\SimpleJsonSchemaValidator.cpp" />
     <ClCompile Include="src\JsonSchemaSerializer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

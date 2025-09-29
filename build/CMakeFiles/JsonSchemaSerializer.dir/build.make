@@ -72,47 +72,47 @@ include CMakeFiles/JsonSchemaSerializer.dir/flags.make
 CMakeFiles/JsonSchemaSerializer.dir/codegen:
 .PHONY : CMakeFiles/JsonSchemaSerializer.dir/codegen
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o: /workspace/JsonSchemaSerializer/src/JsonSchemaParser.cpp
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o -c /workspace/JsonSchemaSerializer/src/JsonSchemaParser.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o: /workspace/JsonSchemaSerializer/src/MinimalJsonParser.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o -c /workspace/JsonSchemaSerializer/src/MinimalJsonParser.cpp
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/JsonSchemaParser.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.i
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/MinimalJsonParser.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.i
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/JsonSchemaParser.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.s
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/MinimalJsonParser.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.s
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o: /workspace/JsonSchemaSerializer/src/BinarySerializer.cpp
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o -c /workspace/JsonSchemaSerializer/src/BinarySerializer.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o: /workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o -c /workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/BinarySerializer.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.i
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.i
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/BinarySerializer.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.s
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.s
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o: /workspace/JsonSchemaSerializer/src/JsonSchemaValidator.cpp
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o -c /workspace/JsonSchemaSerializer/src/JsonSchemaValidator.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o: /workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o -MF CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o.d -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o -c /workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/JsonSchemaValidator.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.i
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp > CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.i
 
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/JsonSchemaValidator.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.s
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp -o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.s
 
 CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o: CMakeFiles/JsonSchemaSerializer.dir/flags.make
 CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o: /workspace/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp
@@ -130,17 +130,17 @@ CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerialize
 
 # Object files for target JsonSchemaSerializer
 JsonSchemaSerializer_OBJECTS = \
-"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o" \
-"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o" \
-"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o" \
+"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o" \
+"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o" \
+"CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o" \
 "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o"
 
 # External object files for target JsonSchemaSerializer
 JsonSchemaSerializer_EXTERNAL_OBJECTS =
 
-libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o
-libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o
-libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o
+libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o
+libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o
+libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o
 libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o
 libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/build.make
 libJsonSchemaSerializer.a: CMakeFiles/JsonSchemaSerializer.dir/link.txt

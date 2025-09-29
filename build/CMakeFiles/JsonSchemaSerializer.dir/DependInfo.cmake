@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/workspace/JsonSchemaSerializer/src/BinarySerializer.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/BinarySerializer.cpp.o.d"
-  "/workspace/JsonSchemaSerializer/src/JsonSchemaParser.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaParser.cpp.o.d"
   "/workspace/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o.d"
-  "/workspace/JsonSchemaSerializer/src/JsonSchemaValidator.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaValidator.cpp.o.d"
+  "/workspace/JsonSchemaSerializer/src/MinimalJsonParser.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o.d"
+  "/workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o.d"
+  "/workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o" "gcc" "CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

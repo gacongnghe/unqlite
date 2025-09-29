@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Copy the relevant functions from the parser
+// Copy the simple parser functions
 typedef enum {
     JSONSCHEMA_SUCCESS = 0,
     JSONSCHEMA_ERROR_INVALID_PARAM = -1,
@@ -95,8 +95,8 @@ char* SimpleJsonParser_ReadString(const char* json_string, size_t* offset) {
 }
 
 int main() {
-    printf("Schema Debug Test\n");
-    printf("=================\n");
+    printf("Simple Parser Debug Test\n");
+    printf("========================\n");
     
     const char* test_json = "{\"type\": \"string\"}";
     printf("Testing JSON: %s\n", test_json);
@@ -119,34 +119,26 @@ int main() {
         return 1;
     }
     printf("Key: '%s'\n", key);
-    
-    // Check if it's "type"
-    if (strcmp(key, "type") == 0) {
-        printf("Found 'type' key\n");
-        
-        // Skip colon
-        SimpleJsonParser_SkipWhitespace(test_json, &offset);
-        if (test_json[offset] != ':') {
-            printf("Expected ':' at position %zu\n", offset);
-            free(key);
-            return 1;
-        }
-        offset++;
-        
-        SimpleJsonParser_SkipWhitespace(test_json, &offset);
-        
-        // Read value
-        char* value = SimpleJsonParser_ReadString(test_json, &offset);
-        if (!value) {
-            printf("Failed to read value\n");
-            free(key);
-            return 1;
-        }
-        printf("Value: '%s'\n", value);
-        free(value);
-    }
-    
     free(key);
+    
+    // Skip colon
+    SimpleJsonParser_SkipWhitespace(test_json, &offset);
+    if (test_json[offset] != ':') {
+        printf("Expected ':' at position %zu\n", offset);
+        return 1;
+    }
+    offset++;
+    
+    SimpleJsonParser_SkipWhitespace(test_json, &offset);
+    
+    // Read value
+    char* value = SimpleJsonParser_ReadString(test_json, &offset);
+    if (!value) {
+        printf("Failed to read value\n");
+        return 1;
+    }
+    printf("Value: '%s'\n", value);
+    free(value);
     
     // Skip closing brace
     SimpleJsonParser_SkipWhitespace(test_json, &offset);

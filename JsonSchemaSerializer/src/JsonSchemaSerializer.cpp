@@ -1,7 +1,7 @@
 #include "JsonSchemaSerializer.h"
-#include "JsonSchemaParser.h"
-#include "BinarySerializer.h"
-#include "JsonSchemaValidator.h"
+#include "MinimalJsonParser.h"
+#include "SimpleBinarySerializer.h"
+#include "SimpleJsonSchemaValidator.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,14 +54,14 @@ JsonSchemaError JsonSchema_LoadFromFile(const char* file_path, JsonSchema** sche
     
     json_string[file_size] = '\0';
     
-    // Parse JSON
-    JsonSchemaError error = JsonSchema_LoadFromString(json_string, schema);
+    // Parse the JSON schema
+    JsonSchemaError result = MinimalJsonParser_ParseSchema(json_string, schema);
     free(json_string);
     
-    return error;
+    return result;
 }
 
-JsonSchemaError JsonSchema_LoadFromString(const char* json_string, JsonSchema** schema) {
+JsonSchemaError JsonSchema_ParseFromString(const char* json_string, JsonSchema** schema) {
     if (!json_string || !schema) {
         return JSONSCHEMA_ERROR_INVALID_PARAM;
     }
@@ -70,7 +70,7 @@ JsonSchemaError JsonSchema_LoadFromString(const char* json_string, JsonSchema** 
         return JSONSCHEMA_ERROR_INVALID_PARAM;
     }
     
-    return JsonSchemaParser_ParseSchema(json_string, schema);
+    return MinimalJsonParser_ParseSchema(json_string, schema);
 }
 
 void JsonSchema_Free(JsonSchema* schema) {
@@ -89,46 +89,79 @@ void JsonSchema_Free(JsonSchema* schema) {
     }
     
     // Free required fields
-    for (size_t i = 0; i < schema->required.required_count; i++) {
-        free(schema->required.required_fields[i]);
-    }
     if (schema->required.required_fields) {
+        for (size_t i = 0; i < schema->required.required_count; i++) {
+            free(schema->required.required_fields[i]);
+        }
         free(schema->required.required_fields);
     }
     
     // Free properties
-    for (size_t i = 0; i < schema->properties.count; i++) {
-        free(schema->properties.keys[i]);
-        JsonValue_Free(&schema->properties.values[i]);
-    }
     if (schema->properties.keys) {
+        for (size_t i = 0; i < schema->properties.count; i++) {
+            free(schema->properties.keys[i]);
+            JsonValue_Free(&schema->properties.values[i]);
+        }
         free(schema->properties.keys);
-    }
-    if (schema->properties.values) {
         free(schema->properties.values);
     }
     
     // Free array items
-    for (size_t i = 0; i < schema->array_items.count; i++) {
-        JsonValue_Free(&schema->array_items.items[i]);
-    }
     if (schema->array_items.items) {
+        for (size_t i = 0; i < schema->array_items.count; i++) {
+            JsonValue_Free(&schema->array_items.items[i]);
+        }
         free(schema->array_items.items);
     }
     
     free(schema);
 }
 
-JsonValue* JsonValue_Create(JsonValueType type) {
-    JsonValue* value = (JsonValue*)calloc(1, sizeof(JsonValue));
-    if (!value) {
-        return NULL;
+JsonSchemaError JsonSchema_Validate(const JsonSchema* schema, const JsonValue* data) {
+    if (!schema || !data) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
     }
     
-    value->type = type;
-    return value;
+    if (!g_library_initialized) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
+    }
+    
+    return JsonSchemaValidator_Validate(data, schema);
 }
 
+JsonSchemaError JsonSchemaSerializer_Serialize(const JsonValue* data, const JsonSchema* schema, uint8_t** buffer, size_t* buffer_size) {
+    if (!data || !schema || !buffer || !buffer_size) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
+    }
+    
+    if (!g_library_initialized) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
+    }
+    
+    // Validate the data against the schema first
+    JsonSchemaError validation_error = JsonSchemaValidator_Validate(data, schema);
+    if (validation_error != JSONSCHEMA_SUCCESS) {
+        return validation_error;
+    }
+    
+    // Use the simple binary serializer
+    return BinarySerializer_Serialize(data, schema, buffer, buffer_size);
+}
+
+JsonSchemaError JsonSchemaSerializer_Deserialize(const uint8_t* buffer, size_t buffer_size, const JsonSchema* schema, JsonValue** data) {
+    if (!buffer || !schema || !data) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
+    }
+    
+    if (!g_library_initialized) {
+        return JSONSCHEMA_ERROR_INVALID_PARAM;
+    }
+    
+    // Use the simple binary serializer
+    return BinarySerializer_Deserialize(buffer, buffer_size, schema, data);
+}
+
+// JsonValue utility functions
 void JsonValue_Free(JsonValue* value) {
     if (!value) {
         return;
@@ -140,29 +173,24 @@ void JsonValue_Free(JsonValue* value) {
                 free(value->value.string_value);
             }
             break;
-            
         case JSON_TYPE_ARRAY:
-            for (size_t i = 0; i < value->value.array_value.count; i++) {
-                JsonValue_Free(&value->value.array_value.items[i]);
-            }
             if (value->value.array_value.items) {
+                for (size_t i = 0; i < value->value.array_value.count; i++) {
+                    JsonValue_Free(&value->value.array_value.items[i]);
+                }
                 free(value->value.array_value.items);
             }
             break;
-            
         case JSON_TYPE_OBJECT:
-            for (size_t i = 0; i < value->value.object_value.count; i++) {
-                free(value->value.object_value.keys[i]);
-                JsonValue_Free(&value->value.object_value.values[i]);
-            }
             if (value->value.object_value.keys) {
+                for (size_t i = 0; i < value->value.object_value.count; i++) {
+                    free(value->value.object_value.keys[i]);
+                    JsonValue_Free(&value->value.object_value.values[i]);
+                }
                 free(value->value.object_value.keys);
-            }
-            if (value->value.object_value.values) {
                 free(value->value.object_value.values);
             }
             break;
-            
         default:
             break;
     }
@@ -182,20 +210,17 @@ JsonValue* JsonValue_Copy(const JsonValue* value) {
     
     switch (value->type) {
         case JSON_TYPE_NULL:
+            break;
         case JSON_TYPE_BOOLEAN:
         case JSON_TYPE_INTEGER:
+            copy->value.int_value = value->value.int_value;
+            break;
         case JSON_TYPE_NUMBER:
-            *copy = *value;
+            copy->value.number_value = value->value.number_value;
             break;
-            
         case JSON_TYPE_STRING:
-            if (value->value.string_value) {
-                copy->value.string_value = strdup(value->value.string_value);
-            } else {
-                copy->value.string_value = NULL;
-            }
+            copy->value.string_value = value->value.string_value ? strdup(value->value.string_value) : NULL;
             break;
-            
         case JSON_TYPE_ARRAY:
             copy->value.array_value.count = value->value.array_value.count;
             copy->value.array_value.items = (JsonValue*)malloc(value->value.array_value.count * sizeof(JsonValue));
@@ -203,7 +228,6 @@ JsonValue* JsonValue_Copy(const JsonValue* value) {
                 copy->value.array_value.items[i] = *JsonValue_Copy(&value->value.array_value.items[i]);
             }
             break;
-            
         case JSON_TYPE_OBJECT:
             copy->value.object_value.count = value->value.object_value.count;
             copy->value.object_value.keys = (char**)malloc(value->value.object_value.count * sizeof(char*));
@@ -218,213 +242,106 @@ JsonValue* JsonValue_Copy(const JsonValue* value) {
     return copy;
 }
 
+// JsonValue setter functions
 JsonSchemaError JsonValue_SetString(JsonValue* value, const char* str) {
-    if (!value || value->type != JSON_TYPE_STRING) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
+    if (!value) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    value->type = JSON_TYPE_STRING;
     if (value->value.string_value) {
         free(value->value.string_value);
     }
-    
     value->value.string_value = str ? strdup(str) : NULL;
     return JSONSCHEMA_SUCCESS;
 }
 
 JsonSchemaError JsonValue_SetInteger(JsonValue* value, int32_t int_val) {
-    if (!value || value->type != JSON_TYPE_INTEGER) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
+    if (!value) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    value->type = JSON_TYPE_INTEGER;
     value->value.int_value = int_val;
     return JSONSCHEMA_SUCCESS;
 }
 
 JsonSchemaError JsonValue_SetNumber(JsonValue* value, double number_val) {
-    if (!value || value->type != JSON_TYPE_NUMBER) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
+    if (!value) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    value->type = JSON_TYPE_NUMBER;
     value->value.number_value = number_val;
     return JSONSCHEMA_SUCCESS;
 }
 
 JsonSchemaError JsonValue_SetBoolean(JsonValue* value, int32_t bool_val) {
-    if (!value || value->type != JSON_TYPE_BOOLEAN) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
+    if (!value) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    value->type = JSON_TYPE_BOOLEAN;
     value->value.int_value = bool_val ? 1 : 0;
     return JSONSCHEMA_SUCCESS;
 }
 
 JsonSchemaError JsonValue_SetNull(JsonValue* value) {
-    if (!value || value->type != JSON_TYPE_NULL) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
-    // Null values don't need additional data
+    if (!value) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    value->type = JSON_TYPE_NULL;
     return JSONSCHEMA_SUCCESS;
 }
 
-JsonSchemaError JsonValue_SetObjectProperty(JsonValue* object, const char* key, JsonValue* value) {
-    if (!object || object->type != JSON_TYPE_OBJECT || !key || !value) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
+JsonSchemaError JsonValue_SetObjectProperty(JsonValue* value, const char* key, JsonValue* prop_value) {
+    if (!value || !key) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    
+    if (value->type != JSON_TYPE_OBJECT) {
+        value->type = JSON_TYPE_OBJECT;
+        value->value.object_value.keys = NULL;
+        value->value.object_value.values = NULL;
+        value->value.object_value.count = 0;
     }
     
-    // Check if property already exists
-    for (size_t i = 0; i < object->value.object_value.count; i++) {
-        if (strcmp(object->value.object_value.keys[i], key) == 0) {
-            // Replace existing property
-            JsonValue_Free(&object->value.object_value.values[i]);
-            object->value.object_value.values[i] = *value;
+    // Check if key already exists
+    for (size_t i = 0; i < value->value.object_value.count; i++) {
+        if (strcmp(value->value.object_value.keys[i], key) == 0) {
+            // Update existing property
+            JsonValue_Free(&value->value.object_value.values[i]);
+            value->value.object_value.values[i] = *JsonValue_Copy(prop_value);
             return JSONSCHEMA_SUCCESS;
         }
     }
     
     // Add new property
-    size_t new_count = object->value.object_value.count + 1;
-    object->value.object_value.keys = (char**)realloc(object->value.object_value.keys, new_count * sizeof(char*));
-    object->value.object_value.values = (JsonValue*)realloc(object->value.object_value.values, new_count * sizeof(JsonValue));
+    size_t new_count = value->value.object_value.count + 1;
+    value->value.object_value.keys = (char**)realloc(value->value.object_value.keys, new_count * sizeof(char*));
+    value->value.object_value.values = (JsonValue*)realloc(value->value.object_value.values, new_count * sizeof(JsonValue));
     
-    if (!object->value.object_value.keys || !object->value.object_value.values) {
-        return JSONSCHEMA_ERROR_MEMORY_ALLOCATION;
-    }
-    
-    object->value.object_value.keys[new_count - 1] = strdup(key);
-    object->value.object_value.values[new_count - 1] = *value;
-    object->value.object_value.count = new_count;
-    
+    value->value.object_value.keys[new_count - 1] = strdup(key);
+    value->value.object_value.values[new_count - 1] = *JsonValue_Copy(prop_value);
+    value->value.object_value.count = new_count;
     return JSONSCHEMA_SUCCESS;
 }
 
-JsonValue* JsonValue_GetObjectProperty(const JsonValue* object, const char* key) {
-    if (!object || object->type != JSON_TYPE_OBJECT || !key) {
+JsonValue* JsonValue_GetObjectProperty(const JsonValue* value, const char* key) {
+    if (!value || !key || value->type != JSON_TYPE_OBJECT) {
         return NULL;
     }
     
-    for (size_t i = 0; i < object->value.object_value.count; i++) {
-        if (strcmp(object->value.object_value.keys[i], key) == 0) {
-            return &object->value.object_value.values[i];
+    for (size_t i = 0; i < value->value.object_value.count; i++) {
+        if (strcmp(value->value.object_value.keys[i], key) == 0) {
+            return &value->value.object_value.values[i];
         }
     }
     
     return NULL;
 }
 
-JsonSchemaError JsonValue_AddArrayItem(JsonValue* array, JsonValue* item) {
-    if (!array || array->type != JSON_TYPE_ARRAY || !item) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
+JsonSchemaError JsonValue_AddArrayItem(JsonValue* value, JsonValue* item) {
+    if (!value || !item) return JSONSCHEMA_ERROR_INVALID_PARAM;
+    
+    if (value->type != JSON_TYPE_ARRAY) {
+        value->type = JSON_TYPE_ARRAY;
+        value->value.array_value.items = NULL;
+        value->value.array_value.count = 0;
     }
     
-    size_t new_count = array->value.array_value.count + 1;
-    array->value.array_value.items = (JsonValue*)realloc(array->value.array_value.items, new_count * sizeof(JsonValue));
-    
-    if (!array->value.array_value.items) {
-        return JSONSCHEMA_ERROR_MEMORY_ALLOCATION;
-    }
-    
-    array->value.array_value.items[new_count - 1] = *item;
-    array->value.array_value.count = new_count;
-    
+    size_t new_count = value->value.array_value.count + 1;
+    value->value.array_value.items = (JsonValue*)realloc(value->value.array_value.items, new_count * sizeof(JsonValue));
+    value->value.array_value.items[new_count - 1] = *JsonValue_Copy(item);
+    value->value.array_value.count = new_count;
     return JSONSCHEMA_SUCCESS;
 }
 
-SerializationResult* JsonSchema_Serialize(const JsonSchema* schema, const JsonValue* data) {
-    if (!schema || !data) {
-        SerializationResult* result = (SerializationResult*)calloc(1, sizeof(SerializationResult));
-        if (result) {
-            result->error = JSONSCHEMA_ERROR_INVALID_PARAM;
-        }
-        return result;
-    }
-    
-    if (!g_library_initialized) {
-        SerializationResult* result = (SerializationResult*)calloc(1, sizeof(SerializationResult));
-        if (result) {
-            result->error = JSONSCHEMA_ERROR_INVALID_PARAM;
-        }
-        return result;
-    }
-    
-    // Validate data against schema
-    JsonSchemaError validation_error = JsonSchema_Validate(schema, data);
-    if (validation_error != JSONSCHEMA_SUCCESS) {
-        SerializationResult* result = (SerializationResult*)calloc(1, sizeof(SerializationResult));
-        if (result) {
-            result->error = validation_error;
-        }
-        return result;
-    }
-    
-    // Create result
-    SerializationResult* result = (SerializationResult*)calloc(1, sizeof(SerializationResult));
-    if (!result) {
-        return NULL;
-    }
-    
-    // Create binary data
-    BinaryData* binary_data = BinaryData_Create(1024); // Start with 1KB
-    if (!binary_data) {
-        result->error = JSONSCHEMA_ERROR_MEMORY_ALLOCATION;
-        return result;
-    }
-    
-    // Write schema key ID first
-    BinarySerializer_WriteUInt32(binary_data, schema->key_id);
-    
-    // Serialize the data
-    result->error = BinarySerializer_SerializeValue(schema, data, binary_data);
-    
-    if (result->error == JSONSCHEMA_SUCCESS) {
-        result->data = *binary_data;
-        free(binary_data); // Don't free the data, just the container
-    } else {
-        BinaryData_Free(binary_data);
-    }
-    
-    return result;
-}
-
-JsonValue* JsonSchema_Deserialize(const JsonSchema* schema, const BinaryData* binary_data, JsonSchemaError* error) {
-    if (!schema || !binary_data || !error) {
-        if (error) *error = JSONSCHEMA_ERROR_INVALID_PARAM;
-        return NULL;
-    }
-    
-    if (!g_library_initialized) {
-        *error = JSONSCHEMA_ERROR_INVALID_PARAM;
-        return NULL;
-    }
-    
-    size_t offset = 0;
-    
-    // Read and verify schema key ID
-    uint32_t key_id = BinarySerializer_ReadUInt32(binary_data, &offset);
-    if (key_id != schema->key_id) {
-        *error = JSONSCHEMA_ERROR_DESERIALIZATION;
-        return NULL;
-    }
-    
-    // Deserialize the data
-    JsonValue* result = NULL;
-    *error = BinarySerializer_DeserializeValue(schema, binary_data, &offset, &result);
-    
-    return result;
-}
-
-JsonSchemaError JsonSchema_Validate(const JsonSchema* schema, const JsonValue* data) {
-    if (!schema || !data) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
-    if (!g_library_initialized) {
-        return JSONSCHEMA_ERROR_INVALID_PARAM;
-    }
-    
-    return JsonSchemaValidator_ValidateValue(schema, data);
-}
-
+// Additional missing functions
 const char* JsonSchema_GetErrorString(JsonSchemaError error) {
     switch (error) {
         case JSONSCHEMA_SUCCESS:
@@ -450,16 +367,58 @@ const char* JsonSchema_GetErrorString(JsonSchemaError error) {
     }
 }
 
-void SerializationResult_Free(SerializationResult* result) {
-    if (!result) {
-        return;
+JsonSchemaError JsonSchema_LoadFromString(const char* json_string, JsonSchema** schema) {
+    return JsonSchema_ParseFromString(json_string, schema);
+}
+
+JsonValue* JsonValue_Create(JsonValueType type) {
+    JsonValue* value = (JsonValue*)calloc(1, sizeof(JsonValue));
+    if (!value) {
+        return NULL;
+    }
+    value->type = type;
+    return value;
+}
+
+SerializationResult* JsonSchema_Serialize(const JsonSchema* schema, const JsonValue* data) {
+    if (!schema || !data) {
+        return NULL;
     }
     
+    SerializationResult* result = (SerializationResult*)calloc(1, sizeof(SerializationResult));
+    if (!result) {
+        return NULL;
+    }
+    
+    // Use the simple binary serializer
+    uint8_t* buffer = NULL;
+    size_t buffer_size = 0;
+    result->error = BinarySerializer_Serialize(data, schema, &buffer, &buffer_size);
+    
+    if (result->error == JSONSCHEMA_SUCCESS) {
+        result->data.data = buffer;
+        result->data.size = buffer_size;
+    }
+    
+    return result;
+}
+
+JsonValue* JsonSchema_Deserialize(const JsonSchema* schema, const BinaryData* binary_data, JsonSchemaError* error) {
+    if (!schema || !binary_data || !error) {
+        if (error) *error = JSONSCHEMA_ERROR_INVALID_PARAM;
+        return NULL;
+    }
+    
+    JsonValue* data = NULL;
+    *error = BinarySerializer_Deserialize(binary_data->data, binary_data->size, schema, &data);
+    
+    return data;
+}
+
+void SerializationResult_Free(SerializationResult* result) {
+    if (!result) return;
     if (result->data.data) {
         free(result->data.data);
-    }
-    if (result->error_message) {
-        free(result->error_message);
     }
     free(result);
 }

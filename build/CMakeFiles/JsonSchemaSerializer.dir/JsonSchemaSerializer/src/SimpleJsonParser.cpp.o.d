@@ -1,7 +1,7 @@
-CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o: \
-  /workspace/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp \
-  /workspace/JsonSchemaSerializer/include/JsonSchemaSerializer.h \
-  /workspace/JsonSchemaSerializer/include/JsonSchemaTypes.h \
+CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonParser.cpp.o: \
+  /workspace/JsonSchemaSerializer/src/SimpleJsonParser.cpp \
+  /workspace/JsonSchemaSerializer/src/SimpleJsonParser.h \
+  /workspace/JsonSchemaSerializer/src/../include/JsonSchemaTypes.h \
   /usr/lib/llvm-20/lib/clang/20/include/stdint.h /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
   /usr/include/features.h /usr/include/features-time64.h \
@@ -27,10 +27,7 @@ CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerialize
   /usr/lib/llvm-20/lib/clang/20/include/__stddef_nullptr_t.h \
   /usr/lib/llvm-20/lib/clang/20/include/__stddef_max_align_t.h \
   /usr/lib/llvm-20/lib/clang/20/include/__stddef_offsetof.h \
-  /workspace/JsonSchemaSerializer/src/MinimalJsonParser.h \
-  /workspace/JsonSchemaSerializer/src/../include/JsonSchemaTypes.h \
-  /workspace/JsonSchemaSerializer/src/SimpleBinarySerializer.h \
-  /workspace/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.h \
+  /workspace/JsonSchemaSerializer/src/../include/JsonSchemaSerializer.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/stdlib.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/cstdlib \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14/bits/c++config.h \
@@ -66,7 +63,8 @@ CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerialize
   /usr/include/alloca.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/std_abs.h \
-  /usr/include/stdio.h /usr/lib/llvm-20/lib/clang/20/include/stdarg.h \
+  /usr/include/string.h /usr/include/strings.h /usr/include/stdio.h \
+  /usr/lib/llvm-20/lib/clang/20/include/stdarg.h \
   /usr/lib/llvm-20/lib/clang/20/include/__stdarg___gnuc_va_list.h \
   /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
@@ -75,5 +73,4 @@ CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerialize
   /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h /usr/include/string.h \
-  /usr/include/strings.h
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h
