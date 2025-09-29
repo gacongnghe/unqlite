@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Copy the ReadString function
+void JsonSchemaParser_SkipWhitespace(const char* json_string, size_t* offset) {
+    if (!json_string || !offset) {
+        return;
+    }
+
+    while (json_string[*offset] == ' ' || json_string[*offset] == '\t' || 
+           json_string[*offset] == '\n' || json_string[*offset] == '\r') {
+        (*offset)++;
+    }
+}
+
+char* JsonSchemaParser_ReadString(const char* json_string, size_t* offset) {
+    if (!json_string || !offset) {
+        return NULL;
+    }
+
+    JsonSchemaParser_SkipWhitespace(json_string, offset);
+
+    if (json_string[*offset] != '"') {
+        printf("Expected '\"' at position %zu, got '%c'\n", *offset, json_string[*offset]);
+        return NULL;
+    }
+
+    (*offset)++; // Skip opening quote
+    size_t start = *offset;
+
+    while (json_string[*offset] != '"' && json_string[*offset] != '\0') {
+        if (json_string[*offset] == '\\') {
+            (*offset)++; // Skip escape character
+        }
+        (*offset)++;
+    }
+
+    if (json_string[*offset] != '"') {
+        printf("Expected closing '\"' at position %zu, got '%c'\n", *offset, json_string[*offset]);
+        return NULL;
+    }
+
+    size_t length = *offset - start;
+    char* result = (char*)malloc(length + 1);
+    if (!result) {
+        return NULL;
+    }
+
+    strncpy(result, json_string + start, length);
+    result[length] = '\0';
+
+    (*offset)++; // Skip closing quote
+    return result;
+}
+
+int main() {
+    printf("String Parsing Test\n");
+    printf("===================\n");
+    
+    const char* test_json = "{\"type\": \"string\"}";
+    printf("Testing JSON: %s\n", test_json);
+    
+    size_t offset = 0;
+    
+    // Skip opening brace
+    if (test_json[offset] != '{') {
+        printf("Expected '{' at position %zu\n", offset);
+        return 1;
+    }
+    offset++;
+    
+    JsonSchemaParser_SkipWhitespace(test_json, &offset);
+    
+    // Read first string
+    char* key = JsonSchemaParser_ReadString(test_json, &offset);
+    if (!key) {
+        printf("Failed to read key\n");
+        return 1;
+    }
+    printf("Key: '%s'\n", key);
+    free(key);
+    
+    // Skip colon
+    JsonSchemaParser_SkipWhitespace(test_json, &offset);
+    if (test_json[offset] != ':') {
+        printf("Expected ':' at position %zu\n", offset);
+        return 1;
+    }
+    offset++;
+    
+    JsonSchemaParser_SkipWhitespace(test_json, &offset);
+    
+    // Read second string
+    char* value = JsonSchemaParser_ReadString(test_json, &offset);
+    if (!value) {
+        printf("Failed to read value\n");
+        return 1;
+    }
+    printf("Value: '%s'\n", value);
+    free(value);
+    
+    // Skip closing brace
+    JsonSchemaParser_SkipWhitespace(test_json, &offset);
+    if (test_json[offset] != '}') {
+        printf("Expected '}' at position %zu, got '%c'\n", offset, test_json[offset]);
+        return 1;
+    }
+    
+    printf("Success!\n");
+    return 0;
+}
