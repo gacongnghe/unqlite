@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -Xlinker --dependency-file=CMakeFiles/JsonSchemaSerializerExample.dir/link.d CMakeFiles/JsonSchemaSerializerExample.dir/example_usage.cpp.o -o JsonSchemaSerializerExample  libJsonSchemaSerializer.a

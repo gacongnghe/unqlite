@@ -1,0 +1,2 @@
+/usr/bin/ar qc libJsonSchemaSerializer.a CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/MinimalJsonParser.cpp.o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleBinarySerializer.cpp.o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/SimpleJsonSchemaValidator.cpp.o CMakeFiles/JsonSchemaSerializer.dir/JsonSchemaSerializer/src/JsonSchemaSerializer.cpp.o
+/usr/bin/ranlib libJsonSchemaSerializer.a

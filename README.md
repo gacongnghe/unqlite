@@ -1,39 +1,218 @@
-## UnQLite - Transactional Embedded Database Engine https://unqlite.org
-[![Build Status](https://travis-ci.org/symisc/unqlite.svg?branch=master)](https://travis-ci.org/symisc/unqlite) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/symisc/unqlite/pulse) [![GitHub license](https://img.shields.io/pypi/l/Django.svg)](https://unqlite.org/licensing.html) 
+# JsonSchemaSerializer
 
-**Release 1.1.8**: As of January 2018 - Symisc Systems has decided to **revive the UnQLite project**. All known data corruption bugs have been fixed, and expect to see new features (LZ compression), performance improvements, etc to be pushed here.
-You should rely for your production build on the amalgamation file and its header file available here or to be downloaded directly from https://unqlite.org/downloads.html
+A C/C++ static library for JSON schema-based binary serialization and deserialization. This library allows you to define data structures using JSON schemas and serialize/deserialize them to/from compact binary format.
 
+## Features
 
-UnQLite is a in-process software library which implements a self-contained, serverless, zero-configuration, transactional NoSQL database engine. UnQLite is a document store database similar to MongoDB, Redis, CouchDB etc. as well a standard Key/Value store similar to BerkeleyDB, LevelDB, etc.
+- **JSON Schema Support**: Load and parse JSON schemas with support for objects, arrays, and primitive types
+- **Binary Serialization**: Convert JSON data to compact binary format based on schema definitions
+- **Binary Deserialization**: Reconstruct JSON data from binary format using schemas
+- **Schema Validation**: Validate data against JSON schemas before serialization
+- **Cross-Platform**: Works on Windows, Linux, and macOS
+- **C API**: Clean C API for easy integration with other languages
+- **Unit Tests**: Comprehensive test suite for all functionality
 
+## Project Structure
 
-UnQLite is an embedded NoSQL (Key/Value store and Document-store) database engine. Unlike most other NoSQL databases, UnQLite does not have a separate server process. UnQLite reads and writes directly to ordinary disk files. A complete database with multiple collections, is contained in a single disk file. The database file format is cross-platform, you can freely copy a database between 32-bit and 64-bit systems or between big-endian and little-endian architectures. UnQLite features includes:
+```
+JsonSchemaSerializer/
+├── include/                    # Public header files
+│   ├── JsonSchemaTypes.h      # Core data types and structures
+│   └── JsonSchemaSerializer.h # Main public API
+├── src/                       # Implementation files
+│   ├── JsonSchemaParser.h     # JSON schema parsing
+│   ├── JsonSchemaParser.cpp
+│   ├── BinarySerializer.h     # Binary serialization
+│   ├── BinarySerializer.cpp
+│   ├── JsonSchemaValidator.h  # Schema validation
+│   ├── JsonSchemaValidator.cpp
+│   └── JsonSchemaSerializer.cpp # Main API implementation
+└── JsonSchemaSerializer.vcxproj # Visual Studio project file
 
+JsonSchemaSerializerTests/
+├── TestRunner.h               # Test framework
+├── TestRunner.cpp
+├── TestJsonSchemaParser.h     # Parser tests
+├── TestJsonSchemaParser.cpp
+├── TestBinarySerializer.h     # Serializer tests
+├── TestBinarySerializer.cpp
+├── TestJsonSchemaValidator.h  # Validator tests
+├── TestJsonSchemaValidator.cpp
+└── JsonSchemaSerializerTests.vcxproj # Visual Studio test project
 
-    Serverless, NoSQL database engine.
-    Transactional (ACID) database.
-    Zero configuration.
-    Single database file, does not use temporary files.
-    Cross-platform file format.
-    UnQLite is a Self-Contained C library without dependency.
-    Standard Key/Value store.
-    Document store (JSON) database via Jx9.
-    Support cursors for linear records traversal.
-    Pluggable run-time interchangeable storage engine.
-    Support for on-disk as well in-memory databases.
-    Built with a powerful disk storage engine which support O(1) lookup.
-    Thread safe and full reentrant.
-    Simple, Clean and easy to use API.
-    Support Terabyte sized databases.
-    BSD licensed product.
-    Amalgamation: All C source code for UnQLite and Jx9 are combined into a single source file.
+address.schema.json            # Example address schema
+person.schema.json             # Example person schema
+example_usage.cpp              # Example usage program
+CMakeLists.txt                 # CMake build configuration
+JsonSchemaSerializer.sln       # Visual Studio solution
+README.md                      # This file
+```
 
+## Building
 
+### Visual Studio (Windows)
 
-UnQLite is a self-contained C library without dependency. It requires very minimal support from external libraries or from the operating system. This makes it well suited for use in embedded devices that lack the support infrastructure of a desktop computer. This also makes UnQLite appropriate for use within applications that need to run without modification on a wide variety of computers of varying configurations.
+1. Open `JsonSchemaSerializer.sln` in Visual Studio
+2. Build the solution (Ctrl+Shift+B)
+3. Run tests by building and running `JsonSchemaSerializerTests` project
+4. Run example by building and running `JsonSchemaSerializerExample` project
 
-UnQLite is written in ANSI C, Thread-safe, Full reentrant, compiles unmodified and should run in most platforms including restricted embedded devices with a C compiler. UnQLite is extensively tested on Windows and UNIX systems especially Linux, FreeBSD, Oracle Solaris and Mac OS X.
+### CMake (Cross-Platform)
 
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
 
-http://unqlite.org
+To run tests:
+```bash
+make test
+# or
+./JsonSchemaSerializerTests
+```
+
+To run example:
+```bash
+./JsonSchemaSerializerExample
+```
+
+## Usage
+
+### Basic Example
+
+```c
+#include "JsonSchemaSerializer.h"
+
+int main() {
+    // Initialize library
+    JsonSchemaSerializer_Initialize();
+    
+    // Load schema
+    JsonSchema* schema = NULL;
+    JsonSchema_LoadFromFile("address.schema.json", &schema);
+    
+    // Create data
+    JsonValue* address = JsonValue_Create(JSON_TYPE_OBJECT);
+    JsonValue* street = JsonValue_Create(JSON_TYPE_STRING);
+    JsonValue_SetString(street, "123 Main St");
+    JsonValue_SetObjectProperty(address, "street", street);
+    
+    // Validate
+    JsonSchema_Validate(schema, address);
+    
+    // Serialize
+    SerializationResult* result = JsonSchema_Serialize(schema, address);
+    
+    // Deserialize
+    JsonValue* deserialized = JsonSchema_Deserialize(schema, &result->data, &error);
+    
+    // Cleanup
+    JsonValue_Free(address);
+    JsonValue_Free(deserialized);
+    JsonSchema_Free(schema);
+    SerializationResult_Free(result);
+    JsonSchemaSerializer_Cleanup();
+    
+    return 0;
+}
+```
+
+### Schema Example
+
+```json
+{
+  "$id": "https://example.com/schemas/address.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Address",
+  "keyId": 11,
+  "type": "object",
+  "properties": {
+    "street": { "type": "string" },
+    "city":   { "type": "string" },
+    "country":{ "type": "string" }
+  },
+  "required": ["street","city"]
+}
+```
+
+## API Reference
+
+### Core Functions
+
+- `JsonSchemaSerializer_Initialize()` - Initialize the library
+- `JsonSchemaSerializer_Cleanup()` - Cleanup library resources
+- `JsonSchema_LoadFromFile()` - Load schema from file
+- `JsonSchema_LoadFromString()` - Load schema from string
+- `JsonSchema_Serialize()` - Serialize data to binary
+- `JsonSchema_Deserialize()` - Deserialize data from binary
+- `JsonSchema_Validate()` - Validate data against schema
+
+### Data Types
+
+- `JsonSchema` - Schema structure
+- `JsonValue` - JSON value structure
+- `BinaryData` - Binary data container
+- `SerializationResult` - Serialization result with error info
+
+### Error Handling
+
+All functions return `JsonSchemaError` codes:
+- `JSONSCHEMA_SUCCESS` - Operation successful
+- `JSONSCHEMA_ERROR_INVALID_PARAM` - Invalid parameter
+- `JSONSCHEMA_ERROR_MEMORY_ALLOCATION` - Memory allocation failed
+- `JSONSCHEMA_ERROR_INVALID_JSON` - Invalid JSON format
+- `JSONSCHEMA_ERROR_SCHEMA_VALIDATION` - Schema validation failed
+- `JSONSCHEMA_ERROR_SERIALIZATION` - Serialization failed
+- `JSONSCHEMA_ERROR_DESERIALIZATION` - Deserialization failed
+- `JSONSCHEMA_ERROR_FILE_NOT_FOUND` - File not found
+- `JSONSCHEMA_ERROR_INVALID_SCHEMA` - Invalid schema
+
+## Binary Format
+
+The binary format is designed for compactness and includes:
+
+1. **Schema Key ID** (4 bytes) - Identifies the schema used
+2. **Value Type** (1 byte) - Type of the root value
+3. **Data** - Serialized data based on schema
+
+### Object Serialization
+- Number of properties (4 bytes)
+- For each property:
+  - Key length + key string
+  - Value type + value data
+
+### Array Serialization
+- Number of items (4 bytes)
+- For each item: value type + value data
+
+### Primitive Types
+- String: length + string data
+- Integer: 4-byte signed integer
+- Number: 8-byte double
+- Boolean: 1-byte (0/1)
+- Null: no additional data
+
+## License
+
+This project is provided as-is for educational and development purposes.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## Testing
+
+The project includes comprehensive unit tests covering:
+- JSON schema parsing
+- Binary serialization/deserialization
+- Schema validation
+- Error handling
+- Memory management
+
+Run tests using the test executable or through CMake's test framework.
